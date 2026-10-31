@@ -37,7 +37,7 @@ Once a minute, while it is turning anybody away, it logs one line to the `bot_ga
 
 Every returning visitor, every visitor from a link and every Googlebot request got its page in a median 0.20 s, the
 page's own time. The same logic has run in production on one of our sites since a flood of about 225 requests a second
-from residential proxies took it down.
+from residential proxies took it down ([the story](https://lightsoutfactory.ai/field-notes/scraper-flood-cloudflare-free-plan/)).
 
 Python 3.9 or newer, no dependencies. `python3 -m unittest test_bot_gate` runs the tests; `test_frameworks.py` runs
 the gate inside Flask, Starlette and FastAPI when they are installed. Both pass on Python 3.9 to 3.13 with Flask 3.1,
