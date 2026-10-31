@@ -148,6 +148,45 @@ class TestGateWSGI(unittest.TestCase):
         self.assertEqual(wsgi_call(app, USER_AGENT=ua)[0], 200, "not through Cloudflare")
         self.assertEqual(app.gate.inflight, 0, "every response closed is out of flight")
 
+    def test_read_but_never_closed_leaves_flight(self):
+        app = gate.BotGateWSGI(wsgi_app)
+        environ = {"REQUEST_METHOD": "GET", "PATH_INFO": "/page", "HTTP_CF_CONNECTING_IP": "1.2.3.4",
+                   "HTTP_USER_AGENT": CHROME.decode(), "HTTP_SEC_FETCH_MODE": "navigate"}
+        result = app(environ, lambda status, headers: None)
+        self.assertEqual(app.gate.inflight, 1)
+        self.assertEqual(b"".join(result), b"page")
+        self.assertEqual(app.gate.inflight, 0, "the body is out")
+        result.close()
+        self.assertEqual(app.gate.inflight, 0, "and close() does not count it twice")
+
+    def test_closed_early_leaves_flight_once(self):
+        class Body:                       # its own iterator with a close(), like werkzeug's ClosingIterator
+            closes = 0
+
+            def __init__(self):
+                self.chunks = iter([b"one", b"two"])
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                return next(self.chunks)
+
+            def close(self):
+                Body.closes += 1
+
+        def stream(environ, start_response):
+            start_response("200 OK", [])
+            return Body()
+
+        app = gate.BotGateWSGI(stream)
+        result = app({"REQUEST_METHOD": "GET", "PATH_INFO": "/page"}, lambda status, headers: None)
+        it = iter(result)
+        self.assertEqual(next(it), b"one")
+        result.close()                    # the client went away after the first chunk
+        del it                            # and the server dropped its iterator
+        self.assertEqual((app.gate.inflight, Body.closes), (0, 1), "out of flight, the app's body closed once")
+
     def test_app_error_leaves_flight(self):
         def boom(environ, start_response):
             raise RuntimeError("app failed")

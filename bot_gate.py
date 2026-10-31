@@ -200,19 +200,25 @@ class BotGateWSGI:
 
 
 class _Counted:
-    """The app's response, counted as in flight until the server closes it (streamed bodies included)."""
+    """The app's response, counted as in flight until its whole body has been sent or the server closes it, whichever
+    comes first (streamed bodies included). Some callers, such as Flask's test client, read the body and never close."""
 
     def __init__(self, result, gate):
         self.result, self.gate, self.done = result, gate, False
 
     def __iter__(self):
-        return iter(self.result)
+        for chunk in self.result:         # not "yield from": that would close the app's iterable a second time
+            yield chunk
+        self._leave()
 
     def close(self):
         try:
             if hasattr(self.result, "close"):
                 self.result.close()
         finally:
-            if not self.done:
-                self.done = True
-                self.gate.leave()
+            self._leave()
+
+    def _leave(self):
+        if not self.done:
+            self.done = True
+            self.gate.leave()
