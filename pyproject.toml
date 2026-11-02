@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bot-gate"
+version = "1.0.1"
+description = "Keep your pages up for people while a scraper floods your site: one-file ASGI/WSGI middleware, no dependencies."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [{ name = "LightsOut Factory", email = "support@lightsoutfactory.ai" }]
+keywords = ["ai-crawlers", "anti-bot", "asgi", "bot-protection", "ddos-protection", "django", "fastapi", "flask", "middleware", "python", "scraping", "self-hosted", "starlette", "web-scraping", "wsgi"]
+classifiers = ["Programming Language :: Python :: 3", "Operating System :: OS Independent"]
+
+[project.urls]
+Homepage = "https://lightsoutfactory.ai/open-source/"
+Source = "https://github.com/lightsoutfactory/bot-gate"
+
+[tool.setuptools]
+py-modules = ["bot_gate"]

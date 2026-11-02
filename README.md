@@ -10,6 +10,14 @@ app = BotGate(app, allow_ips={"203.0.113.7"})                    # ASGI
 app.wsgi_app = BotGateWSGI(app.wsgi_app, cookies=("session",))   # WSGI (Flask)
 ```
 
+## Install
+
+```sh
+pip install git+https://github.com/lightsoutfactory/bot-gate
+```
+
+Or copy `bot_gate.py` into your project: it is one file with no dependencies.
+
 ## What it decides
 
 For each GET or HEAD request for a page:
