@@ -64,4 +64,10 @@ site you run and emails you when one goes down and when it is back, installs thr
 most floods at the edge (the free version is [cloudflare-free-shield](https://github.com/lightsoutfactory/cloudflare-free-shield)),
 switches the emergency one on by itself during a flood and summarises what Cloudflare's firewall challenged.
 
+Also free from us: [cloudflare-free-shield](https://github.com/lightsoutfactory/cloudflare-free-shield) (three
+Cloudflare Free-plan rules against scraper floods),
+[translation-checks](https://github.com/lightsoutfactory/translation-checks) (catch translations that would break your
+app) and [vllm-health](https://github.com/lightsoutfactory/vllm-health) (a vLLM health check that never waits in the
+queue).
+
 MIT licence.
